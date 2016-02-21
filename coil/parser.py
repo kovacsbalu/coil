@@ -8,6 +8,7 @@ import sys
 
 from coil import tokenizer, struct, errors
 
+
 class StructPrototype(struct.Struct):
     """A temporary struct used for parsing only.
 
@@ -56,8 +57,8 @@ class StructPrototype(struct.Struct):
             raise KeyError
 
     def __contains__(self, key):
-        return (super(StructPrototype, self).__contains__(key)
-                or key in self._secondary_values)
+        return (super(StructPrototype, self).__contains__(key) or
+                key in self._secondary_values)
 
     def __iter__(self):
         for key in self._secondary_order:
@@ -67,8 +68,8 @@ class StructPrototype(struct.Struct):
                 yield key
 
     def __len__(self):
-        return (super(StructPrototype, self).__len__()
-                + len(self._secondary_values))
+        return (super(StructPrototype, self).__len__() +
+                len(self._secondary_values))
 
     def extends(self, base, relative=False):
         """Add a struct as another parent.
@@ -80,11 +81,11 @@ class StructPrototype(struct.Struct):
 
         if base is self:
             raise errors.StructError(self,
-                "Struct cannot extend itself.")
+                                     "Struct cannot extend itself.")
 
         if not isinstance(base, struct.Struct):
             raise errors.StructError(self,
-                "attempting to extend a value which is NOT a struct.")
+                                     "attempting to extend a value which is NOT a struct.")
 
         if base._map is not None and self._map is None:
             self._map = list(base._map)
@@ -112,10 +113,9 @@ class StructPrototype(struct.Struct):
     def _validate_doubleset(self, key):
         """Private: check that key has not been used (excluding parents)"""
 
-        if (super(StructPrototype, self).__contains__(key)
-                or key in self._deleted):
+        if (super(StructPrototype, self).__contains__(key) or key in self._deleted):
             raise errors.StructError(self,
-                    "Setting/deleting '%s' twice" % repr(key))
+                                     "Setting/deleting '%s' twice" % repr(key))
 
 
 class Parser(object):
@@ -132,7 +132,7 @@ class Parser(object):
     """
 
     def __init__(self, input_, path=None, encoding=None,
-            expand=True, defaults=(), ignore_missing=()):
+                 expand=True, defaults=(), ignore_missing=()):
         if path:
             self._path = os.path.abspath(path)
         else:
@@ -192,7 +192,7 @@ class Parser(object):
                 special = getattr(self, "_special_%s" % token.value[1:], None)
                 if special is None:
                     raise errors.CoilParseError(token,
-                            "Unknown special attribute: %s" % token.value)
+                                                "Unknown special attribute: %s" % token.value)
                 else:
                     special(container, token)
             elif '.' in token.value:
@@ -292,7 +292,7 @@ class Parser(object):
 
         if container.container is None:
             raise errors.StructError(self,
-                "@root cannot extend other structs.")
+                                     "@root cannot extend other structs.")
 
         path = token.value
 
@@ -304,21 +304,21 @@ class Parser(object):
 
         if not isinstance(parent, struct.Struct):
             raise errors.StructError(container,
-                  "@extends target must be of type Struct")
+                                     "@extends target must be of type Struct")
 
         if parent is container:
             raise errors.StructError(container,
-                  "@extends target cannot be self")
+                                     "@extends target cannot be self")
 
         if not (path.startswith("@") or path.startswith("..")):
             raise errors.StructError(container,
-                  "@extends target cannot be children of container")
+                                     "@extends target cannot be children of container")
 
         _container = container
         while _container is not None:
             if _container == parent:
                 raise errors.StructError(container,
-                      "@extends target cannot be parents of container")
+                                         "@extends target cannot be parents of container")
             _container = _container.container
 
         container.extends(parent)
@@ -328,13 +328,13 @@ class Parser(object):
 
         coil_file = open(file_path)
         parent = self.__class__(coil_file, path=file_path,
-                encoding=self._encoding, expand=False).prototype()
+                                encoding=self._encoding, expand=False).prototype()
 
         if struct_path:
             parent = parent.get(struct_path)
             if not isinstance(parent, struct.Struct):
                 raise errors.StructError(container,
-                    "@file specification sub-import type must be Struct.")
+                                         "@file specification sub-import type must be Struct.")
 
         container.extends(parent, True)
 
@@ -365,7 +365,7 @@ class Parser(object):
 
         if not os.path.isabs(file_path):
             raise errors.CoilParseError(token,
-                    "Unable to find absolute path: %s" % file_path)
+                                        "Unable to find absolute path: %s" % file_path)
 
         try:
             self._extend_with_file(container, file_path, struct_path)
@@ -381,13 +381,13 @@ class Parser(object):
 
         if not isinstance(value, basestring):
             raise errors.CoilParseError(token,
-                    "@package value must be a string")
+                                        "@package value must be a string")
 
         try:
             package, path = value.split(":", 1)
         except ValueError:
             errors.CoilParseError(token,
-                    '@package value must be "package:path"')
+                                  '@package value must be "package:path"')
 
         parts = package.split(".")
         parts.append("__init__.py")
@@ -402,7 +402,7 @@ class Parser(object):
 
         if not fullpath:
             raise errors.CoilParseError(token,
-                    "Unable to find package: %s" % package)
+                                        "Unable to find package: %s" % package)
 
         try:
             self._extend_with_file(container, fullpath, "")
@@ -412,6 +412,6 @@ class Parser(object):
     def _special_map(self, container, token):
         if container._map is not None:
             raise errors.CoilParseError(token,
-                    "Found multiple @map lists, only one is allowed")
+                                        "Found multiple @map lists, only one is allowed")
         container._map = []
         self._parse_list_values(container._map)

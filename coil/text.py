@@ -8,6 +8,7 @@ from coil import parser, parse_file, errors
 
 ParseError = errors.CoilError
 
+
 def fromSequence(iterOfStrings, filePath=None):
     """Load a Struct from a sequence of strings.
 
@@ -21,6 +22,7 @@ def fromSequence(iterOfStrings, filePath=None):
         lines += line.splitlines()
     return parser.Parser(lines, filePath, 'utf-8').root()
 
+
 def fromString(st, filePath=None):
     """Load a Struct from a string.
 
@@ -28,6 +30,7 @@ def fromString(st, filePath=None):
     relative @file arguments to work.
     """
     return parser.Parser(st.splitlines(), filePath, 'utf-8').root()
+
 
 def fromFile(path):
     """Load a struct from a file, given a path on the filesystem."""

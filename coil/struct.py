@@ -24,6 +24,7 @@ from coil import tokenizer, errors
 _EXPAND_BRACES = re.compile("^(.*){([^}]+)}(.*)$")
 _EXPAND_RANGE = re.compile("^(0*(\d+))\.\.(\d+)$")
 
+
 def _expand_str(string):
     """Helper function for _expand_list to operate on individual strings"""
 
@@ -49,6 +50,7 @@ def _expand_str(string):
 
         return new
 
+
 def _expand_list(seq):
     """Expand {1..2} and {1,2} constructs in a list of strings.
     Although this would be a useful public function it is private for
@@ -60,6 +62,7 @@ def _expand_list(seq):
         new.extend(_expand_str(item))
 
     return new
+
 
 def _copy_list(seq):
     """Recursively copy a list of lists"""
@@ -481,6 +484,7 @@ class Link(Node):
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, repr(self.path))
 
+
 class List(Node, list):
     """A list that can copy itself recursively"""
 
@@ -807,8 +811,8 @@ class Struct(Node, OrderedDict):
                     value = _expand_list(value)
                     if len(value) != len(map):
                         raise errors.StructError(self, "Invalid @map list: "
-                                "expected length is %s, %s has length of %s" %
-                                (len(map), key, len(value)))
+                                                 "expected length is %s, %s has length of %s" %
+                                                 (len(map), key, len(value)))
                     lists.append((key, value))
                     del self[key]
                 else:
@@ -819,7 +823,7 @@ class Struct(Node, OrderedDict):
                     name = "%s%s" % (key, suffix)
                     if not self.validate_key(name):
                         raise errors.StructError(self, "Invalid @map list: "
-                                "key contains invalid characters: %r" % suffix)
+                                                 "key contains invalid characters: %r" % suffix)
                     new = orig.copy(name=name, container=self)
                     self[name] = new
 
@@ -856,7 +860,7 @@ class Struct(Node, OrderedDict):
             abspath = self.path(key)
             if abspath in _block:
                 raise errors.StructError(self,
-                        "Circular reference to %s" % abspath)
+                                         "Circular reference to %s" % abspath)
 
             _block = list(_block)
             _block.append(abspath)
@@ -899,7 +903,7 @@ class Struct(Node, OrderedDict):
             subkey = match.group(1)
             try:
                 subval = self.expanditem(subkey,
-                        defaults, ignore_missing, _block)
+                                         defaults, ignore_missing, _block)
             except errors.KeyMissingError, ex:
                 if ignore_missing is True or ex.key in ignore_missing:
                     return match.group(0)
@@ -911,7 +915,7 @@ class Struct(Node, OrderedDict):
         def expand_link(link):
             try:
                 subval = self.expanditem(link.path,
-                        defaults, ignore_missing, _block)
+                                         defaults, ignore_missing, _block)
             except errors.KeyMissingError, ex:
                 if ignore_missing is True or ex.key in ignore_missing:
                     return link
@@ -1054,7 +1058,7 @@ class Struct(Node, OrderedDict):
                 return str(item)
             else:
                 raise errors.StructError(self,
-                    "%s cannot be represented in the coil text format" % item)
+                                         "%s cannot be represented in the coil text format" % item)
 
         result = ""
 
@@ -1161,6 +1165,7 @@ Node._cls_struct = Struct
 #: For compatibility with Coil <= 0.2.2, use KeyError or KeyMissingError
 StructAttributeError = errors.KeyMissingError
 
+
 class StructNode(object):
     """For compatibility with Coil <= 0.2.2, use :class:`Struct` instead."""
 
@@ -1173,7 +1178,7 @@ class StructNode(object):
         self._container = struct.container
 
     def has_key(self, attr):
-        return self._struct.has_key(attr)
+        return attr in self._struct
 
     def get(self, attr, default=Struct._raise):
         val = self._struct.get(attr, default)

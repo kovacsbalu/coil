@@ -7,6 +7,7 @@ import re
 
 from coil import errors
 
+
 class Location(object):
     """Represents a location in a file"""
 
@@ -19,6 +20,7 @@ class Location(object):
             self.filePath = None
             self.line = None
             self.column = None
+
 
 class Token(Location):
     """Represents a single token"""
@@ -42,6 +44,7 @@ class Token(Location):
 
     def __str__(self):
         return "<%s: %s>" % (self.type, self.value)
+
 
 class Tokenizer(Location):
     """Split input into basic tokens"""
@@ -102,8 +105,8 @@ class Tokenizer(Location):
                 unexpected = "%s: %s" % (token.type, repr(token.value))
 
             raise errors.CoilParseError(token,
-                    "Unexpected %s, looking for %s" %
-                    (unexpected, " ".join(types)))
+                                        "Unexpected %s, looking for %s" %
+                                        (unexpected, " ".join(types)))
 
     def _push(self, token):
         """Push a token back into the tokenizer"""
@@ -140,7 +143,6 @@ class Tokenizer(Location):
                 except StopIteration:
                     return Token(self, 'EOF')
 
-
             # Buffer should at least have a newline
             assert self._buffer
 
@@ -155,7 +157,7 @@ class Tokenizer(Location):
         # Special characters
         for tok in ('{', '}', '[', ']', ':', '~', '='):
             if self._buffer[0] == tok:
-                token =  Token(self, tok, tok)
+                token = Token(self, tok, tok)
                 self._buffer = self._buffer[1:]
                 self.column += 1
                 return token
@@ -197,7 +199,7 @@ class Tokenizer(Location):
 
         # Unknown input :-(
         raise errors.CoilParseError(self,
-                "Unrecognized input: %s" % self._buffer)
+                                    "Unrecognized input: %s" % self._buffer)
 
     def _next_line_generator(self):
         for line in self._input:
@@ -229,7 +231,7 @@ class Tokenizer(Location):
 
     def _parse_string(self):
         def decode(buf):
-            # If _encoding is set all strings should 
+            # If _encoding is set all strings shoul
             # be unicode instead of str
             if self._encoding:
                 try:

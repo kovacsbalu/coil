@@ -1,6 +1,7 @@
 # Copyright (c) 2008-2009 ITA Software, Inc.
 # See LICENSE.txt for details.
 
+
 class CoilError(Exception):
     """Generic error for Coil"""
 
@@ -25,6 +26,7 @@ class CoilError(Exception):
         else:
             return self.reason
 
+
 class NodeError(CoilError):
     """Generic error for :class:`coil.struct.Node` objects"""
 
@@ -35,9 +37,10 @@ class NodeError(CoilError):
     def __str__(self):
         if self.filePath or self.line:
             return "<%s %s:%s> %s" % (self.node_path,
-                    self.filePath, self.line, self.reason)
+                                      self.filePath, self.line, self.reason)
         else:
             return "<%s> %s" % (self.node_path, self.reason)
+
 
 class CircularReference(NodeError):
     """Failed to resolve a :class:`Link` or other reference
@@ -48,6 +51,7 @@ class CircularReference(NodeError):
         self.link_path = link_path
         reason = "Circular reference to %s" % link_path
         super(NodeError, self).__init__(node, reason)
+
 
 class StructError(NodeError):
     """Generic error for :class:`coil.struct.Struct` objects"""
@@ -66,6 +70,7 @@ class KeyMissingError(StructError, KeyError):
         self.key = key
         StructError.__init__(self, struct, msg)
 
+
 class KeyTypeError(StructError, TypeError):
     """The given key was not a string"""
 
@@ -73,12 +78,14 @@ class KeyTypeError(StructError, TypeError):
         msg = "Keys must be strings, got %s" % type(key)
         StructError.__init__(self, struct, msg)
 
+
 class KeyValueError(StructError, ValueError):
     """The given key contained invalid characters"""
 
     def __init__(self, struct, key):
         msg = "The key %s contains invalid characters" % repr(key)
         StructError.__init__(self, struct, msg)
+
 
 class ValueTypeError(StructError):
     """The given item in a path was not the correct type"""
@@ -88,9 +95,11 @@ class ValueTypeError(StructError):
                 repr(key), item_type.__name__, need_type.__name__)
         StructError.__init__(self, struct, msg)
 
+
 class CoilParseError(CoilError):
     """General error during parsing"""
     pass
+
 
 class CoilUnicodeError(CoilParseError):
     """Invalid unicode string"""
