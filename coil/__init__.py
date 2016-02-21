@@ -4,11 +4,12 @@
 
 """Coil: A Configuration Library."""
 
-__version_info__ = (0,3,99)
+from coil.parser import Parser
+
+__version_info__ = (0, 3, 99)
 __version__ = ".".join([str(x) for x in __version_info__])
 __all__ = ['struct', 'parser', 'tokenizer', 'errors']
 
-from coil.parser import Parser
 
 def parse_file(file_name, **kwargs):
     """Open and parse a coil file.
@@ -23,6 +24,7 @@ def parse_file(file_name, **kwargs):
     """
     coil = open(file_name)
     return Parser(coil, file_name, **kwargs).root()
+
 
 def parse(string, **kwargs):
     """Parse a coil string.
