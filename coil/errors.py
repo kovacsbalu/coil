@@ -16,13 +16,13 @@ class CoilError(Exception):
         instances that are raised during parse time.
         """
 
-        self.filePath = location.filePath
+        self.file_path = location.file_path
         self.line = location.line
         self.column = location.column
 
     def __str__(self):
-        if self.filePath or self.line:
-            return "<%s:%s> %s" % (self.filePath, self.line, self.reason)
+        if self.file_path or self.line:
+            return "<%s:%s> %s" % (self.file_path, self.line, self.reason)
         else:
             return self.reason
 
@@ -35,9 +35,9 @@ class NodeError(CoilError):
         CoilError.__init__(self, node, reason)
 
     def __str__(self):
-        if self.filePath or self.line:
+        if self.file_path or self.line:
             return "<%s %s:%s> %s" % (self.node_path,
-                                      self.filePath, self.line, self.reason)
+                                      self.file_path, self.line, self.reason)
         else:
             return "<%s> %s" % (self.node_path, self.reason)
 
@@ -58,7 +58,7 @@ class StructError(NodeError):
 
     # compat
     @property
-    def structPath(self):
+    def struct_path(self):
         return self.node_path
 
 
@@ -91,8 +91,8 @@ class ValueTypeError(StructError):
     """The given item in a path was not the correct type"""
 
     def __init__(self, struct, key, item_type, need_type):
-        msg = "the item at %s is a %s, expected %s" % (
-                repr(key), item_type.__name__, need_type.__name__)
+        msg = "the item at %s is a %s, expected %s" % (repr(key),
+                                                       item_type.__name__, need_type.__name__)
         StructError.__init__(self, struct, msg)
 
 
