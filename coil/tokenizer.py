@@ -13,11 +13,11 @@ class Location(object):
 
     def __init__(self, location=None):
         if location:
-            self.filePath = location.filePath
+            self.file_path = location.file_path
             self.line = location.line
             self.column = location.column
         else:
-            self.filePath = None
+            self.file_path = None
             self.line = None
             self.column = None
 
@@ -71,16 +71,16 @@ class Tokenizer(Location):
     _STR4 = re.compile(r'"((\\.|[^\\"])*)(")')
     _STRESC = re.compile(r'\\.')
 
-    def __init__(self, input_, filePath=None, encoding=None):
+    def __init__(self, input_, file_path=None, encoding=None):
         """
         @param input_: An iterator over lines of input.
             Typically a C{file} object or list of strings.
-        @param filePath: Path to input file, used for errors.
+        @param file_path: Path to input file, used for errors.
         @param encoding: Read strings using the given encoding. All
             string values will be C{unicode} objects rather than C{str}.
         """
 
-        self.filePath = filePath
+        self.file_path = file_path
         self.line = 0
         self.column = 0
         self._input = input_
@@ -91,7 +91,8 @@ class Tokenizer(Location):
         # We iterate over the input in both next and _parse_string
         self._next_line = self._next_line_generator().next
 
-    def _expect(self, token, types):
+    @staticmethod
+    def _expect(token, types):
         """Check that token has the correct type"""
 
         assert types
@@ -126,7 +127,7 @@ class Tokenizer(Location):
 
         token = self._next()
         if types:
-            self._expect(token, types)
+            Tokenizer._expect(token, types)
         return token
 
     def _next(self):
@@ -210,14 +211,12 @@ class Tokenizer(Location):
             yield line
 
     def _escape_string(self, token):
-        replace = {
-                "\\\\": "\\",
-                "\\n": "\n",
-                "\\r": "\r",
-                "\\t": "\t",
-                "\\'": "'",
-                '\\"': '"',
-                }
+        replace = {"\\\\": "\\",
+                   "\\n": "\n",
+                   "\\r": "\r",
+                   "\\t": "\t",
+                   "\\'": "'",
+                   '\\"': '"'}
 
         def do_replace(match):
             val = match.group(0)

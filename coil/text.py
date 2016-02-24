@@ -9,29 +9,29 @@ from coil import parser, parse_file, errors
 ParseError = errors.CoilError
 
 
-def fromSequence(iterOfStrings, filePath=None):
+def from_sequence(iter_of_strings, file_path=None):
     """Load a Struct from a sequence of strings.
 
-    @param filePath: path the strings were loaded from. Required for
+    @param file_path: path the strings were loaded from. Required for
     relative @file arguments to work.
     """
     # The strings in 0.2.2 were allowed to contain newlines. We now
     # expect the iter to be of lines, not arbitrary strings.
     lines = []
-    for line in iterOfStrings:
+    for line in iter_of_strings:
         lines += line.splitlines()
-    return parser.Parser(lines, filePath, 'utf-8').root()
+    return parser.Parser(lines, file_path, 'utf-8').root()
 
 
-def fromString(st, filePath=None):
+def from_string(st, file_path=None):
     """Load a Struct from a string.
 
-    @param filePath: path the string was loaded from. Required for
+    @param file_path: path the string was loaded from. Required for
     relative @file arguments to work.
     """
-    return parser.Parser(st.splitlines(), filePath, 'utf-8').root()
+    return parser.Parser(st.splitlines(), file_path, 'utf-8').root()
 
 
-def fromFile(path):
+def from_file(path):
     """Load a struct from a file, given a path on the filesystem."""
     return parse_file(path)

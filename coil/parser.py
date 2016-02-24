@@ -113,7 +113,7 @@ class StructPrototype(struct.Struct):
     def _validate_doubleset(self, key):
         """Private: check that key has not been used (excluding parents)"""
 
-        if (super(StructPrototype, self).__contains__(key) or key in self._deleted):
+        if super(StructPrototype, self).__contains__(key) or key in self._deleted:
             raise errors.StructError(self,
                                      "Setting/deleting '%s' twice" % repr(key))
 
