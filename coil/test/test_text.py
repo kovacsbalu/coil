@@ -16,7 +16,7 @@ class TextTestCase(unittest.TestCase):
             ['x: "' + u"\u3456".encode("utf-8") + '"', u'\u3456'],
             [r'x: "\" \ x"', u'" \ x'],
             ):
-            x = text.fromString(structStr).get("x")
+            x = text.from_string(structStr).get("x")
             self.assertEquals(x, value)
             self.assert_(isinstance(x, unicode))
 
@@ -26,18 +26,18 @@ class TextTestCase(unittest.TestCase):
             ('x: 20909', 20909),
             ('x: -34324', -34324),
             ('x: 0', 0)]:
-            x = text.fromString(structStr).get("x")
+            x = text.from_string(structStr).get("x")
             self.assertEquals(x, value)
 
     def testListParse(self):
         for s, l in [#('x: [None 1 2.3 ["hello \\"world"] [7]]',
                      # [None, 1, 2.3, [u'hello "world'], [7]]),
                      ('x: ["a" "b"]', [u"a", u"b"])]:
-            self.assertEquals(text.fromString(s).get("x"), l)
+            self.assertEquals(text.from_string(s).get("x"), l)
 
     def testComments(self):
         s = "y: [12 #hello\n]"
-        self.assertEquals(text.fromString(s).get("y"), [12])
+        self.assertEquals(text.from_string(s).get("y"), [12])
 
     def testStruct(self):
         s = '''
@@ -51,7 +51,7 @@ struct: {
 a-number: 2
 -moo: 3
 '''
-        root = text.fromString(s)
+        root = text.from_string(s)
         self.assertEquals(list(root.attributes()), ["struct", "a-number", "-moo"])
         self.assertEquals(root.get("a-number"), 2)
         self.assertEquals(root.get("-moo"), 3)
@@ -70,7 +70,7 @@ struct: {
     sub.c: 3
     sub.d-e: 5
 }'''
-        root = text.fromString(s).get("struct")
+        root = text.from_string(s).get("struct")
         self.assertEquals(root.get("sub").get("a"), 1)
         self.assertEquals(root.get("sub").get("b"), 2)
         self.assertEquals(root.get("sub").get("c"), 3)
@@ -101,10 +101,10 @@ struct: {
             'a: {@extends: .}',
             'a: [1 2 3]]',
             ]:
-            self.assertRaises(text.ParseError, text.fromString, s)
+            self.assertRaises(text.ParseError, text.from_string, s)
 
         try:
-            text.fromString("x: 1\n2\n")
+            text.from_string("x: 1\n2\n")
         except text.ParseError, e:
             self.assertEquals(e.line, 2)
             self.assertEquals(e.column, 1)
@@ -125,7 +125,7 @@ struct2: {
 }
 ~struct2.d
 '''
-        root = text.fromString(s).get("struct2")
+        root = text.from_string(s).get("struct2")
         self.assertEquals(list(root.attributes()), ["a"])
         self.assertEquals(list(root.get("a").attributes()), ["x"])
         self.assert_(not root.has_key("d"))
@@ -140,7 +140,7 @@ struct: {
 }
 x: "hello"
 '''
-        root = struct.StructNode(text.fromString(s))
+        root = struct.StructNode(text.from_string(s))
         self.assertEquals(root.struct.c, "hello")
         self.assertEquals(root.struct.sub.a, 2)
         self.assertEquals(root.struct.sub.c2, 1)
@@ -164,7 +164,7 @@ foo: {
    c.f: 9 # nicer way of doing it
 }
 '''
-        foo = struct.StructNode(text.fromString(s)).foo
+        foo = struct.StructNode(text.from_string(s)).foo
         self.assertEquals(foo.a, 3)
         self.assertEquals(foo.b, 2)
         self.assertEquals(foo.c.d, 7)
@@ -184,7 +184,7 @@ foo: {
             }
             base.y: 2 # sub should NOT have y
             '''
-        s = text.fromString(s)
+        s = text.from_string(s)
         self.assertEquals(s.get("base").get("y"), 2)
         self.assertEquals(s.get("sub").get("x"), 1)
         self.assertRaises(struct.StructAttributeError, lambda: s.get("sub").get("y"))        
@@ -197,19 +197,19 @@ foo: {
     def testPathImport(self):
         path = os.path.abspath(sibpath(__file__, "example.coil"))
         s = 'x: {@file: "%s"}' % path
-        self._testFile(text.fromString(s).get("x"))
+        self._testFile(text.from_string(s).get("x"))
         s = 'x: {@file: "example.coil"}'
-        self._testFile(text.fromString(s, __file__).get("x"))
+        self._testFile(text.from_string(s, __file__).get("x"))
     
     def testPackageImport(self):
         s = 'x: {@package: "coil:test/example.coil"}'
-        self._testFile(text.fromString(s).get("x"))
+        self._testFile(text.from_string(s).get("x"))
         s = 'x: {@package: "coil.test:example.coil"}'
-        self._testFile(text.fromString(s).get("x"))
+        self._testFile(text.from_string(s).get("x"))
 
     def testFileImport(self):
         path = sibpath(__file__, "example2.coil")
-        s = text.fromFile(path)
+        s = text.from_file(path)
         node = struct.StructNode(s)
         # make sure relative and absolute paths work and are relative
         # to sub-struct that did the @file.
@@ -221,7 +221,7 @@ foo: {
         
     def testFileSubImport(self):
         # @file can reference a sub-struct of imported file.
-        s = text.fromFile(sibpath(__file__, "filesubimport.coil"))
+        s = text.from_file(sibpath(__file__, "filesubimport.coil"))
         node = struct.StructNode(s)
         # 0. Top-level import:
         self.assertEquals(node.imp.sub.x, "default")
@@ -237,7 +237,7 @@ foo: {
     
     def testFileImportAtTopLevel(self):
         path = sibpath(__file__, "example3.coil")
-        s = text.fromFile(path)
+        s = text.from_file(path)
         node = struct.StructNode(s)
         self.assertEquals(node.y.a, 2)
         self.assertEquals(node.y.b, 3)
@@ -247,7 +247,7 @@ foo: {
         s = """x: 1
                y: {x: =@root.x}
                z: {y2: {@extends: ...y}}"""
-        node = struct.StructNode(text.fromString(s))
+        node = struct.StructNode(text.from_string(s))
         self.assertEquals(node.x, 1)
         self.assertEquals(node.y.x, 1)
         self.assertEquals(node.z.y2.x, 1)
